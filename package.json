@@ -1,0 +1,16 @@
+{
+  "name": "anki-gas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@google/clasp": "^2.5.0",
+    "@types/google-apps-script": "^1.0.93",
+    "typescript": "^5.7.3"
+  }
+}
