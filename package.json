@@ -12,5 +12,8 @@
     "@google/clasp": "^2.5.0",
     "@types/google-apps-script": "^1.0.93",
     "typescript": "^5.7.3"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.9"
   }
 }

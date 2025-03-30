@@ -1,44 +1,14 @@
+import { Headers } from "./anki-common/headers";
+import { richText } from "./anki-common/rich_text";
+
 const SCHEMA = {
   id: 0,
   word: 1,
   reading: 2,
   definition: 3,
   complementary: 4,
+  reference: 5,
 };
-
-function stringifyRichTextValueIntoHTML(
-  richTextValue: GoogleAppsScript.Spreadsheet.RichTextValue | null
-): string {
-  if (!richTextValue) {
-    return "";
-  }
-
-  const richTextValues = richTextValue.getRuns();
-  let html = "";
-
-  for (const richTextValue of richTextValues) {
-    let text = richTextValue.getText();
-    const style = richTextValue.getTextStyle();
-
-    if (style.isBold()) {
-      text = `<b>${text}</b>`;
-    }
-    if (style.isItalic()) {
-      text = `<em>${text}</em>`;
-    }
-    if (style.isStrikethrough()) {
-      text = `<del>${text}</del>`;
-    }
-    if (style.isUnderline()) {
-      text = `<u>${text}</u>`;
-    }
-
-    // colors and fonts are not supported for now
-    html += text;
-  }
-
-  return html;
-}
 
 function generateUUIDs(): void {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -58,26 +28,46 @@ function createTsvFromActiveSpreadsheet(): string {
   const values = range.getRichTextValues();
   console.log(values);
 
-  if (sheet.getName() === "四字熟語") {
-    // drop headers
-    values.shift();
+  switch (sheet.getName()) {
+    case "四字熟語": {
+      // drop headers
+      values.shift();
 
-    const tsv = values
-      .map((row) => row.map((cell) => stringifyRichTextValueIntoHTML(cell)))
-      .map((row) => row.join("\t"))
-      .join("\n");
+      const tsv = values
+        .map((row) => row.map((cell) => richText.stringify(cell)))
+        .map((row) => row.join("\t"))
+        .join("\n");
 
-    const headers = Object.entries({
-      deck: "漢字::漢検準一級::四字熟語",
-      notetype: "漢検準一級-四字熟語",
-      html: true,
-    })
-      .map(([key, value]) => `#${key}:${value}`)
-      .join("\n");
+      const headers = new Headers({
+        deck: "漢字::漢検準一級::四字熟語",
+        notetype: "漢検準一級-四字熟語",
+        html: true,
+      })
 
-    return headers + "\n" + tsv;
-  } else {
-    throw new Error("Unknown sheet name");
+      return headers.toString() + "\n" + tsv;
+    }
+
+    case "書き取り": {
+      // drop headers
+      values.shift();
+
+      const tsv = values
+        .map((row) => row.map((cell) => richText.stringify(cell)))
+        .map((row) => row.join("\t"))
+        .join("\n");
+
+      const headers = new Headers({
+        deck: "漢字::漢検準一級::書き取り",
+        notetype: "漢検準一級-書き取り",
+        html: true,
+      });
+
+      return headers.toString() + "\n" + tsv;
+    }
+
+    default: {
+      throw new Error("Unknown sheet name");
+    }
   }
 }
 
@@ -102,11 +92,11 @@ function exportTSV() {
   );
 }
 
-function onOpen() {
+export function onOpen() {
   const ui = SpreadsheetApp.getUi();
 
   ui.createMenu("Anki")
-    .addItem("IDを生成", "generateUUIDs")
-    .addItem("TSVを生成", "exportTSV")
+    .addItem("IDを生成", generateUUIDs.name)
+    .addItem("TSVを生成", exportTSV.name)
     .addToUi();
 }
