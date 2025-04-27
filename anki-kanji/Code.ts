@@ -1,5 +1,58 @@
-import { Headers } from "./anki-common/headers";
-import { richText } from "./anki-common/rich_text";
+type HeadersInit = {
+  deck: string;
+  notetype: string;
+  html: boolean;
+};
+
+export class Headers {
+  readonly #init: HeadersInit;
+
+  constructor(init: HeadersInit) {
+    this.#init = init;
+  }
+
+  toString(): string {
+    return Object.entries(this.#init)
+      .map(([key, value]) => `#${key}:${value}`)
+      .join("\n");
+  }
+}
+
+
+function stringify(
+  richTextValue: GoogleAppsScript.Spreadsheet.RichTextValue | null
+): string {
+  if (!richTextValue) {
+    return "";
+  }
+
+  const richTextValues = richTextValue.getRuns();
+  let html = "";
+
+  for (const richTextValue of richTextValues) {
+    let text = richTextValue.getText();
+    const style = richTextValue.getTextStyle();
+
+    if (style.isBold()) {
+      text = `<b>${text}</b>`;
+    }
+    if (style.isItalic()) {
+      text = `<em>${text}</em>`;
+    }
+    if (style.isStrikethrough()) {
+      text = `<del>${text}</del>`;
+    }
+    if (style.isUnderline()) {
+      text = `<u>${text}</u>`;
+    }
+
+    // colors and fonts are not supported for now
+    html += text;
+  }
+
+  return html;
+}
+
 
 const SCHEMA = {
   id: 0,
@@ -34,7 +87,7 @@ function createTsvFromActiveSpreadsheet(): string {
       values.shift();
 
       const tsv = values
-        .map((row) => row.map((cell) => richText.stringify(cell)))
+        .map((row) => row.map((cell) => stringify(cell)))
         .map((row) => row.join("\t"))
         .join("\n");
 
@@ -52,7 +105,7 @@ function createTsvFromActiveSpreadsheet(): string {
       values.shift();
 
       const tsv = values
-        .map((row) => row.map((cell) => richText.stringify(cell)))
+        .map((row) => row.map((cell) => stringify(cell)))
         .map((row) => row.join("\t"))
         .join("\n");
 
