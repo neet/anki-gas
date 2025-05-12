@@ -46,6 +46,8 @@ function stringify(
       text = `<u>${text}</u>`;
     }
 
+    text = text.replace(/\n/g, "<br>");
+
     // colors and fonts are not supported for now
     html += text;
   }
@@ -112,6 +114,24 @@ function createTsvFromActiveSpreadsheet(): string {
       const headers = new Headers({
         deck: "漢字::漢検準一級::書き取り",
         notetype: "漢検準一級-書き取り",
+        html: true,
+      });
+
+      return headers.toString() + "\n" + tsv;
+    }
+
+    case "読み": {
+      // drop headers
+      values.shift();
+
+      const tsv = values
+        .map((row) => row.map((cell) => stringify(cell)))
+        .map((row) => row.join("\t"))
+        .join("\n");
+
+      const headers = new Headers({
+        deck: "漢字::漢検準一級::読み",
+        notetype: "漢検準一級-読み",
         html: true,
       });
 
