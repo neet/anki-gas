@@ -136,7 +136,7 @@ function createTsvFromActiveSpreadsheet(): string {
 
       const tsv = values
         .map((row) => row.map((cell, cellIndex) => {
-          if (cellIndex === 4) {
+          if (cellIndex === 5) {
             return createCloze(cell, "isBold");
           } else {
             return stringify(cell);
