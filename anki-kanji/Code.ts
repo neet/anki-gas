@@ -167,7 +167,13 @@ function exportTSV() {
 
 function extractUnderlines(): void {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const range = sheet.getDataRange();
+  const range = sheet.getSelection().getActiveRange();
+
+  if (!range) {
+    SpreadsheetApp.getUi().alert("範囲を選択してください。");
+    return;
+  }
+
   const values = range.getRichTextValues();
   
   const underlines: string[] = [];

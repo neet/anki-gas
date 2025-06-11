@@ -13,7 +13,7 @@ const readStdin = async (): Promise<string[]> => {
   });
 }
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ headless: false });
 const page = await browser.newPage();
 const words = await readStdin();
 
@@ -24,11 +24,23 @@ for (const word of words) {
   url.search = new URLSearchParams({
     k: word,
     wt: '1',
-    sk: 'leftHand',
+    sk: 'perfect',
   }).toString();
 
   await page.goto(url.toString());
-  await page.click("#resultKotobaList > li > a")
+
+  const links = await page.$$("#resultKotobaList > li > a");
+  if (links.length === 0) {
+    buffer += "(0)\n";
+    continue;
+  }
+  if (links.length > 1) {
+    buffer += `(2+) ${url}\n`;
+    continue;
+  }
+
+  const link = links[0];
+  await link.click();
   await page.waitForLoadState('networkidle');
   const text = await page.$eval("#kotobaExplanationSection", el => el.textContent?.trim() ?? "");
 
