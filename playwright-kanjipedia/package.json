@@ -1,16 +1,18 @@
 {
-  "name": "anki-kanji",
+  "name": "playwright-kanjipedia",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
+  "description": "",
   "dependencies": {
-    "@google/clasp": "^3.0.6-alpha",
-    "@types/google-apps-script": "^1.0.98",
+    "@types/node": "^24.0.0",
+    "playwright": "^1.53.0",
+    "tsx": "^4.20.1",
     "typescript": "^5.8.3"
   }
 }

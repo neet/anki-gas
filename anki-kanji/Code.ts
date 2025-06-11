@@ -165,11 +165,52 @@ function exportTSV() {
   );
 }
 
+function extractUnderlines(): void {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const range = sheet.getDataRange();
+  const values = range.getRichTextValues();
+  
+  const underlines: string[] = [];
+
+  for (const row of values) {
+    for (const cell of row) {
+      if (!cell) continue;
+
+      const richTextValues = cell.getRuns();
+      for (const richTextValue of richTextValues) {
+        if (richTextValue.getTextStyle().isUnderline()) {
+          underlines.push(richTextValue.getText());
+        }
+      }
+    }
+  }
+
+  if (underlines.length === 0) {
+    SpreadsheetApp.getUi().alert("下線部は見つかりませんでした。");
+    return;
+  }
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <body>
+        <textarea readonly style="width: 100%; height: 200px">${underlines.join("\n")}</textarea>
+      </body>
+    </html>	
+  `;
+
+  SpreadsheetApp.getUi().showModalDialog(
+    HtmlService.createHtmlOutput(html),
+    "下線部の抽出"
+  );
+}
+
 export function onOpen() {
   const ui = SpreadsheetApp.getUi();
 
   ui.createMenu("Anki")
     .addItem("IDを生成", generateUUIDs.name)
     .addItem("TSVを生成", exportTSV.name)
+    .addItem("下線部を抽出", extractUnderlines.name)
     .addToUi();
 }
