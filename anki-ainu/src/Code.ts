@@ -1,22 +1,4 @@
-type HeadersInit = {
-  deck: string;
-  notetype: string;
-  html: boolean;
-};
-
-class Headers {
-  readonly #init: HeadersInit;
-
-  constructor(init: HeadersInit) {
-    this.#init = init;
-  }
-
-  toString(): string {
-    return Object.entries(this.#init)
-      .map(([key, value]) => `#${key}:${value}`)
-      .join("\n");
-  }
-}
+import { Headers } from "../../anki-common/headers.js";
 
 const SCHEMA = {
   id: 0,
@@ -98,7 +80,7 @@ function exportTSV() {
   );
 }
 
-export function onOpen() {
+function onOpen(): void {
   const ui = SpreadsheetApp.getUi();
 
   ui.createMenu("Anki")
@@ -106,3 +88,4 @@ export function onOpen() {
     .addItem("TSVを生成", exportTSV.name)
     .addToUi();
 }
+
