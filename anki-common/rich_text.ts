@@ -29,6 +29,8 @@ function stringify(
     html += text;
   }
 
+  html = html.replaceAll("\n", "<br/>");
+
   return html;
 }
 

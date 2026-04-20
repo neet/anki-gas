@@ -43,6 +43,22 @@ function createTsvFromActiveSpreadsheet(): string {
 
       return headers.toString() + "\n" + tsv;
     }
+    case "問題": {
+      // drop headers
+      values.shift();
+
+      const tsv = values
+        .map((row) => row.join("\t"))
+        .join("\n");
+
+      const headers = new Headers({
+        deck: "インドネシア語::問題",
+        notetype: "インドネシア語-問題",
+        html: true,
+      })
+
+      return headers.toString() + "\n" + tsv;
+    }
     default: {
       throw new Error("Unknown sheet name");
     }

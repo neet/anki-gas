@@ -1,16 +1,16 @@
 import { Headers } from "../../anki-common/headers.js";
+import { richText } from "../../anki-common/rich_text.js";
 
 const WORD_SCHEMA = {
   ID: 0,
   POS: 1,
   WORD: 2,
-  WORD_FEMININE: 3,
-  WORD_OTHERS: 4,
-  DEF: 5,
-  EX_ID: 6,
-  EX_SENTENCE: 7,
-  EX_TRANSLATION: 8,
-  SYNONYM: 9,
+  DEF: 3,
+  NOTES: 4,
+  EX_ID: 5,
+  EX_SENTENCE: 6,
+  EX_TRANSLATION: 7,
+  SYNONYM: 8,
 };
 
 const SHEETS = new Map([
@@ -24,7 +24,7 @@ const SHEETS = new Map([
 function createTsvFromActiveSpreadsheet() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const range = sheet.getDataRange();
-  const values = range.getValues();
+  const values = range.getRichTextValues();
 
   if (sheet.getName() === SHEETS.get("words")) {
     // drop headers
@@ -36,7 +36,7 @@ function createTsvFromActiveSpreadsheet() {
     }
 
     const tsv = values
-      .map((row) => row.map(v => v.replaceAll("\n", "")))
+      .map((row) => row.map((cell) => richText.stringify(cell)))
       .map((row) => row.join("\t"))
       .join("\n");
 
